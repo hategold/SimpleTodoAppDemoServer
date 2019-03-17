@@ -2,7 +2,7 @@ const express = require('express');
 const todoRoutes = express.Router();
 const calendarApi = require('../apiControllers/calendarApiController');
 
-let TodoSummary = require('../todoSummary.model'); 
+let TodoSummary = require('../todoSummary.model');
 let TodoDetail = require('../todoDetail.model');
 
 todoRoutes.route('/').get(function (req, res) {
@@ -50,10 +50,15 @@ todoRoutes.route('/update/:id').post(function (req, res) {
                 todoDetail.save().then(err => {
                     todoSummary.save().then(err => {
                         var insertEventDate = {
-                            "todoSummary":todoSummary,
+                            "todoSummary": todoSummary,
                             "todoDetail": todoDetail
+                        };
+                        try {
+                            calendarApi.update(insertEventDate)
+                        } catch (e) {
+                            console.log(e);
                         }
-                        calendarApi.update(insertEventDate)
+
                         res.json('Todo updated!');
                     })
                 })
@@ -76,9 +81,10 @@ todoRoutes.route('/delete/:id').get(function (req, res) {
             TodoSummary.remove(toDeleteSummary, (err) => {
                 if (err)
                     res.status(400).send("Update not possible");
-                try{calendarApi.destroy(todoSummary._id);
-                }catch(e){
-                    console.log(e); 
+                try {
+                    calendarApi.destroy(todoSummary._id);
+                } catch (e) {
+                    console.log(e);
                 }
                 res.json('Todo deleted!');
             });
@@ -90,20 +96,24 @@ todoRoutes.route('/delete/:id').get(function (req, res) {
 todoRoutes.route('/add').post(function (req, res) {
 
     let todoDetail = new TodoDetail(req.body.todoDetail);
-    
+
     todoDetail.save()
         .then(todoDetail => {
             req.body.todoSummary.todo_detail = todoDetail;
             let todoSummary = new TodoSummary(req.body.todoSummary);
             todoSummary.save()
-                .then(err => { 
+                .then(err => {
                     var insertEventDate = {
-                        "todoSummary":todoSummary,
+                        "todoSummary": todoSummary,
                         "todoDetail": todoDetail
                     }
-                    calendarApi.create(insertEventDate)
-                    
-                    res.status(200).json({ 'todo': 'todo added successfully' }); })
+                    try {
+                        calendarApi.create(insertEventDate)
+                    } catch (e) {
+                        console.log(e);
+                    }
+                    res.status(200).json({ 'todo': 'todo added successfully' });
+                })
                 .catch(err => {
                     res.status(400).send('adding new todo failed');
                 });
