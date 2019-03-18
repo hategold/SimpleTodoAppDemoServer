@@ -24,9 +24,13 @@ It's server side code for running  Simple Todo App
 ##### DB Connection
 預設使用mongodb://127.0.0.1:27017/todos作為DB Connection
 可於以下地方修改
+```js
     mongoose.connect('mongodb://127.0.0.1:27017/todos', { useNewUrlParser: true });//server.js(13)
-也可進入mondodb執行以下指令產生database(27017 port是預設值)
-    use todos
+```
+也可進入mondodb執行以下指令產生database(27017 port是預設值)<br/>
+`
+use todos
+`
 
 ## Personal Google Calendar Authentication
 * Check [here](https://console.developers.google.com/flows/enableapi?apiid=calendar).
